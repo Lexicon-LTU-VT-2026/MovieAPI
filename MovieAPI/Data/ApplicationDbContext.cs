@@ -20,6 +20,8 @@ namespace MovieAPI.Data
         // public DbSet<Actor> Actors { get; set; } = null!;
         public DbSet<Actor> Actors => Set<Actor>();
 
+        public DbSet<MovieActor> MovieActors => Set<MovieActor>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
