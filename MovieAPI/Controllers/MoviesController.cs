@@ -79,6 +79,53 @@ public class MoviesController : ControllerBase
         return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
     }
 
+    // POST: api/movies/{movieId}/actors/{actorId}
+    [HttpPost("{movieId}/actors/{actorId}")]
+    public async Task<IActionResult> AddActorToMovie(int movieId, int actorId)
+    {
+        // Kontrollera att filmen finns
+        var movie = await _context.Movies
+            .Include(m => m.MovieActors)
+            .FirstOrDefaultAsync(m => m.Id == movieId);
+
+        if (movie == null)
+        {
+            return NotFound("Movie not found");
+        }
+
+        // Kontrollera att skådespelaren finns
+        var actor = await _context.Actors.FindAsync(actorId);
+        if (actor == null)
+        {
+            return NotFound("Actor not found");
+        }
+
+        // Kontrollera att kopplingen inte redan finns
+        var existing = movie.MovieActors
+            .Any(ma => ma.ActorId == actorId);
+
+        if (existing)
+        {
+            return BadRequest("Actor is already added to this movie");
+        }
+
+        // Skapa ny koppling
+        var movieActor = new MovieActor
+        {
+            MovieId = movieId,
+            ActorId = actorId
+        };
+
+        _context.MovieActors.Add(movieActor);
+        await _context.SaveChangesAsync();
+
+        // Returnera 201 Created eller 204 NoContent
+        return CreatedAtAction(
+            nameof(GetMovie),
+            new { id = movieId },
+            new { movieId, actorId });
+    }
+
     // DELETE: api/Movie/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMovie(int? id)
@@ -92,7 +139,7 @@ public class MoviesController : ControllerBase
         _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return NoContent(); // 204
     }
 
     private bool MovieExists(int? id)
