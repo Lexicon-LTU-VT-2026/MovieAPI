@@ -1,0 +1,14 @@
+﻿namespace MovieAPI.Models
+{
+    public class Review
+    {
+        public int Id { get; set; }
+        public string ReviewerName { get; set; } = "";
+        public string Comment { get; set; } = "";
+        public int Rating { get; set; } // 1–5
+
+        // 1:M med Movie
+        public int MovieId { get; set; }
+        public Movie Movie { get; set; } = null!;
+    }
+}
