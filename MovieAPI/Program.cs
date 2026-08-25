@@ -80,6 +80,12 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Anropa seed
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
