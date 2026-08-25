@@ -5,9 +5,11 @@ using MovieAPI.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]   // Kräver inloggning
 public class MoviesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
@@ -17,6 +19,7 @@ public class MoviesController : ControllerBase
     }
 
     // GET: api/Movie
+    // Alla inloggade användare får läsa filmer
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Movie>>> GetMovie()
     {
@@ -71,6 +74,7 @@ public class MoviesController : ControllerBase
     // POST: api/Movie
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
+    [Authorize (Roles = "Admin")]
     public async Task<ActionResult<Movie>> PostMovie(Movie movie)
     {
         _context.Movies.Add(movie);
